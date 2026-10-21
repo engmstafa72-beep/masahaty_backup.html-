@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مساحتي الإبداعية - تطبيق الكتابة والالتزام</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        song: '#8b5cf6',
+                        script: '#f59e0b',
+                        poem: '#ec4899',
+                        task: '#10b981'
+                    },
+                    fontFamily: {
+                        sans: ['System-UI', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        input, textarea {
+            user-select: text;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .glass-header {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        @keyframes pulse-lock {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .animate-lock {
+            animation: pulse-lock 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
+
+    <header class="sticky top-0 z-30 glass-header bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between shadow-sm">
+        <div class="flex items-center gap-3">
+            <button id="nav-back-btn" onclick="handleHeaderBack()" class="hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white font-bold text-lg shadow-md">
+                    م
+                </div>
+                <h1 id="header-title" class="font-bold text-lg text-slate-900 dark:text-white truncate">مساحتي الإبداعية</h1>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-2">
+            <!-- Save Status Indicator -->
+            <span id="save-status" class="text-xs px-2.5 py-1 rounded-full font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 transition-all">
+                <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                <span>خامل</span>
+            </span>
+            <!-- Theme Toggle -->
+            <button onclick="toggleDarkMode()" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                <svg class="w-5 h-5 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            </button>
+            <!-- Backup & Settings Button -->
+            <button onclick="openBackupModal()" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="النسخ الاحتياطي والإعدادات">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <main id="app-viewport" class="flex-1 max-w-4xl w-full mx-auto p-4 md:p-6 pb-24 overflow-y-auto">
+
+        <!-- 1. Home Dashboard View -->
+        <section id="view-dashboard" class="space-y-6">
+            <!-- Session Active Warning Banner if exists -->
+            <div id="active-session-banner" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl animate-lock">🔒</span>
+                    <div>
+                        <h4 class="font-bold text-amber-700 dark:text-amber-400">لديك جلسة إنجاز نشطة مقفلة!</h4>
+                        <p class="text-xs text-amber-600 dark:text-amber-500">يجب عليك إكمال الجزء المطلوب قبل تنقل آخر.</p>
+                    </div>
+                </div>
+                <button onclick="resumeActiveSession()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold shadow">
+                    استئناف الجلسة
+                </button>
+            </div>
+
+            <div class="text-right space-y-1">
+                <h2 class="text-2xl font-black text-slate-900 dark:text-white">مرحباً بك في مساحتك الإبداعية</h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400">اختر أداة إبداعية لبدء الكتابة والتطوير دون تشتيت</p>
+            </div>
+
+            <!-- Four Main Tool Cards Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Songwriting Card -->
+                <button onclick="navToTool('song')" class="flex flex-col items-center justify-center p-5 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 hover:border-violet-500 hover:shadow-lg transition-all group">
+                    <div class="w-14 h-14 rounded-2xl bg-violet-100 dark:bg-violet-900/40 text-violet-600 dark:text-violet-400 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+                        🎵
+                    </div>
+                    <span class="font-bold text-slate-800 dark:text-slate-200 text-base">الأغاني</span>
+                    <span class="text-xs text-slate-400 mt-1">قوالب وإشطار</span>
+                </button>
+
+                <!-- Screenwriting Card -->
+                <button onclick="navToTool('script')" class="flex flex-col items-center justify-center p-5 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 hover:border-amber-500 hover:shadow-lg transition-all group">
+                    <div class="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+                        🎬
+                    </div>
+                    <span class="font-bold text-slate-800 dark:text-slate-200 text-base">السيناريو</span>
+                    <span class="text-xs text-slate-400 mt-1">أفلام ومسلسلات</span>
+                </button>
+
+                <!-- Poetry Card -->
+                <button onclick="navToTool('poem')" class="flex flex-col items-center justify-center p-5 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 hover:border-pink-500 hover:shadow-lg transition-all group">
+                    <div class="w-14 h-14 rounded-2xl bg-pink-100 dark:bg-pink-900/40 text-pink-600 dark:text-pink-400 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+                        📜
+                    </div>
+                    <span class="font-bold text-slate-800 dark:text-slate-200 text-base">الشعر</span>
+                    <span class="text-xs text-slate-400 mt-1">قصائد ومقاطع</span>
+                </button>
+
+                <!-- Tasks Card -->
+                <button onclick="navToTool('task')" class="flex flex-col items-center justify-center p-5 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:shadow-lg transition-all group">
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+                        ✅
+                    </div>
+                    <span class="font-bold text-slate-800 dark:text-slate-200 text-base">المهام</span>
+                    <span class="text-xs text-slate-400 mt-1">إدارة والتنبيهات</span>
+                </button>
+            </div>
+
+            <!-- Recent Projects Section -->
+            <div class="space-y-3 pt-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-bold text-slate-800 dark:text-slate-200 text-lg">آخر المشروعات المعدلة</h3>
+                    <span class="text-xs text-slate-400" id="recent-count">0 مشروعات</span>
+                </div>
+                <div id="recent-projects-list" class="space-y-2">
+                    <div class="text-center py-8 text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+                        لا توجد مشروعات حديثة حتى الآن. ابدأ بإنشاء مشروعات جديدة من الكروت أعلاه.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Song Tool View (List & Editor) -->
+        <section id="view-song" class="hidden space-y-6">
+            <!-- List Mode -->
+            <div id="song-list-mode" class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white">أغانيّ الإبداعية</h2>
+                        <p class="text-xs text-slate-500">إدارة الأغاني وقوالب الكتابة الأوتوماتيكية</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="openSongTemplateModal()" class="px-3.5 py-2 bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 font-bold rounded-2xl text-xs flex items-center gap-1.5 shadow-sm transition hover:bg-violet-200">
+                            <span>✨</span> قوالب جاهزة
+                        </button>
+                        <button onclick="createNewSongPrompt()" class="px-4 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-2xl text-sm flex items-center gap-2 shadow-md transition">
+                            <span>+</span> أغنية فارغة
+                        </button>
+                    </div>
+                </div>
+                <div id="songs-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </div>
+            </div>
+
+            <!-- Song Editor Mode -->
+            <div id="song-editor-mode" class="hidden space-y-4">
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-3xl border border-slate-200 dark:border-slate-700 space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-700 pb-3">
+                        <div class="flex items-center gap-2">
+                            <input id="song-title-input" type="text" class="text-xl font-bold bg-transparent border-b border-dashed border-slate-300 dark:border-slate-600 focus:outline-none focus:border-violet-500 text-slate-900 dark:text-white" placeholder="اسم الأغنية..." oninput="autoSaveSongHeader()">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="saveCurrentProjectNow(true)" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow transition" title="حفظ الأغنية الان">
+                                <span>💾</span>
+                                <span>حفظ</span>
+                            </button>
+                            <button onclick="duplicateCurrentSong()" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-xs font-semibold rounded-xl transition">نسخة مستقلة</button>
+                            <button onclick="addNewSongSection()" class="px-3 py-1.5 bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-300 hover:bg-violet-200 text-xs font-semibold rounded-xl transition">+ قسم جديد</button>
+                        </div>
+                    </div>
+
+                    <!-- Required Progress Bar -->
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400">
+                            <span>الأقسام المطلوبة المكتملة</span>
+                            <span id="song-progress-text">0 / 0</span>
+                        </div>
+                        <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
+                            <div id="song-progress-bar" class="bg-violet-600 h-full w-0 transition-all duration-300"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sections Container -->
+                <div id="song-sections-list" class="space-y-4">
+                </div>
+
+                <!-- Final Action Finish Bar -->
+                <div class="pt-4 flex items-center justify-between bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
+                    <div class="text-xs text-slate-500">
+                        لإتمام الجلسة والرجوع، املأ كل الأقسام المطلوبة.
+                    </div>
+                    <button id="song-finish-btn" onclick="finishSongSession()" class="px-6 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl text-sm shadow disabled:opacity-50 disabled:cursor-not-allowed transition">
+                        تم (إنهاء الجلسة)
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Screenplay View -->
+        <section id="view-script" class="hidden space-y-6">
+            <!-- List Mode -->
+            <div id="script-list-mode" class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white">مشروعات السيناريو</h2>
+                        <p class="text-xs text-slate-500">كتابة الأفلام والمسلسلات وتقطيع المشاهد</p>
+                    </div>
+                    <button onclick="createNewScriptPrompt()" class="px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-2xl text-sm flex items-center gap-2 shadow-md transition">
+                        <span>+</span> سيناريو جديد
+                    </button>
+                </div>
+                <div id="scripts-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </div>
+            </div>
+
+            <!-- Script Scenes Explorer Mode -->
+            <div id="script-explorer-mode" class="hidden space-y-4">
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-3xl border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <span id="script-type-badge" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">فيلم</span>
+                        <h2 id="script-project-title" class="text-xl font-bold text-slate-900 dark:text-white mt-1">عنوان المشروع</h2>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="addNewSceneToScript()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-sm shadow">
+                            + مشهد جديد
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Scenes List -->
+                <div id="script-scenes-list" class="space-y-3">
+                </div>
+            </div>
+
+            <!-- Single Scene Editor Mode -->
+            <div id="script-scene-editor" class="hidden space-y-4">
+                <div class="bg-amber-500/10 border border-amber-500/30 p-3 rounded-2xl flex items-center justify-between">
+                    <span class="text-xs font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+                        جلسة إنجاز مشهد جارية
+                    </span>
+                    <span id="scene-editor-num" class="text-sm font-black text-amber-800 dark:text-amber-200">مشهد #1</span>
+                </div>
+
+                <div id="scene-fields-container" class="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-slate-200 dark:border-slate-700 space-y-4">
+                </div>
+
+                <div class="flex items-center justify-between bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
+                    <div class="text-xs text-slate-500">
+                        إكمال هذا المشهد يتيح لك الرجوع، ولن يُجبرك على إنهاء العمل بالكامل.
+                    </div>
+                    <button id="scene-finish-btn" onclick="finishSceneSession()" class="px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-sm shadow disabled:opacity-50 transition">
+                        تم للمشهد
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Poetry View -->
+        <section id="view-poem" class="hidden space-y-6">
+            <!-- List Mode -->
+            <div id="poem-list-mode" class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white">ديوان القصائد</h2>
+                        <p class="text-xs text-slate-500">كتابة وتحرير المقاطع والأجزاء الشعرية</p>
+                    </div>
+                    <button onclick="createNewPoemPrompt()" class="px-4 py-2.5 bg-pink-600 hover:bg-pink-700 text-white font-bold rounded-2xl text-sm flex items-center gap-2 shadow-md transition">
+                        <span>+</span> قصيدة جديدة
+                    </button>
+                </div>
+                <div id="poems-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </div>
+            </div>
+
+            <!-- Poem Editor Mode -->
+            <div id="poem-editor-mode" class="hidden space-y-4">
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-3xl border border-slate-200 dark:border-slate-700 space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-700 pb-3">
+                        <input id="poem-title-input" type="text" class="text-xl font-bold bg-transparent border-b border-dashed border-slate-300 dark:border-slate-600 focus:outline-none focus:border-pink-500 text-slate-900 dark:text-white" placeholder="عنوان القصيدة..." oninput="autoSavePoemHeader()">
+                        <div class="flex items-center gap-2">
+                            <button onclick="duplicateCurrentPoem()" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-xs font-semibold rounded-xl transition">نسخة مستقلة</button>
+                            <button onclick="addNewPoemStanza()" class="px-3 py-1.5 bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-300 hover:bg-pink-200 text-xs font-semibold rounded-xl transition">+ مقطع جديد</button>
+                        </div>
+                    </div>
+                    <!-- Required Status -->
+                    <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400">
+                        <span>المقاطع المطلوبة المكتملة</span>
+                        <span id="poem-progress-text">0 / 0</span>
+                    </div>
+                </div>
+
+                <div id="poem-stanzas-list" class="space-y-4">
+                </div>
+
+                <div class="flex items-center justify-between bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
+                    <div class="text-xs text-slate-500">إتمام الأجزاء المطلوبة يتيح لك إنهاء الجلسة.</div>
+                    <button id="poem-finish-btn" onclick="finishPoemSession()" class="px-6 py-2.5 bg-pink-600 hover:bg-pink-700 text-white font-bold rounded-xl text-sm shadow disabled:opacity-50 transition">
+                        تم (إنهاء الجلسة)
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Tasks View -->
+        <section id="view-task" class="hidden space-y-6">
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-slate-200 dark:border-slate-700 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white">المهام والتنبيهات اليومية</h2>
+                        <p class="text-xs text-slate-500">جدولة مواعيدك وتنبيهات الإنجاز</p>
+                    </div>
+                    <button onclick="requestNotificationPermission()" class="px-3 py-1.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 rounded-xl text-xs font-bold">
+                        تفعيل التنبيهات 🔔
+                    </button>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs text-slate-500 space-y-1">
+                    <p class="font-bold text-slate-700 dark:text-slate-300">💡 تنبيه تقني حول الإشعارات:</p>
+                    <p>تعمل التنبيهات مباشرة في المتصفح المفتوح. للحصول على إشعارات خلفية مضمونة تماماً عند إغلاق التطبيق في الهواتف، يُنصح بتحويل الملف إلى PWA أو تطبيق محمول عبر آلية جدولة للنظام.</p>
+                </div>
+
+                <!-- New Task Form -->
+                <form onsubmit="handleAddTask(event)" class="space-y-3 border-t border-slate-100 dark:border-slate-700 pt-3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input id="task-title-input" type="text" required class="p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:border-emerald-500" placeholder="عنوان المهمة...">
+                        <input id="task-datetime-input" type="datetime-local" required class="p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input id="task-desc-input" type="text" class="p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:border-emerald-500" placeholder="وصف اختياري للمهمة...">
+                        <select id="task-reminder-offset" class="p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:border-emerald-500">
+                            <option value="0">التنبيه عند الموعد تماماً</option>
+                            <option value="5">قبل الموعد بـ 5 دقائق</option>
+                            <option value="10">قبل الموعد بـ 10 دقائق</option>
+                            <option value="30">قبل الموعد بـ 30 دقيقة</option>
+                            <option value="60">قبل الموعد بـ ساعة واحدة</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow transition">
+                        حفظ المهمة 📌
+                    </button>
+                </form>
+            </div>
+
+            <!-- Tasks Lists -->
+            <div class="space-y-4">
+                <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base">قائمة المهام</h3>
+                <div id="tasks-container" class="space-y-2">
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Backup & Restore Modal -->
+    <div id="modal-backup" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-3xl p-6 space-y-5 shadow-2xl border border-slate-200 dark:border-slate-700">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+                <h3 class="font-bold text-lg text-slate-900 dark:text-white">النسخ الاحتياطي والإعدادات</h3>
+                <button onclick="closeBackupModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+            </div>
+            <div class="space-y-4 text-sm">
+                <p class="text-slate-500 dark:text-slate-400 text-xs">يمكنك تصدير كافة مشروعاتك ومهامك إلى ملف احتياطي أو استردادها لاحقاً.</p>
+                <button onclick="exportDataJSON()" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow transition">تصدير بياناتي (JSON)</button>
+                <div class="border-t border-slate-100 dark:border-slate-700 pt-3 space-y-2">
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">استيراد نسخة احتياطية:</label>
+                    <input type="file" accept=".json" onchange="importDataJSON(event)" class="text-xs text-slate-500 file:mr-2 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-100 dark:file:bg-slate-700 file:text-slate-700 dark:file:text-slate-200">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Song Templates Modal -->
+    <div id="modal-song-templates" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 w-full max-w-lg rounded-3xl p-6 space-y-5 shadow-2xl border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+                <div>
+                    <h3 class="font-bold text-lg text-slate-900 dark:text-white">قوالب الأغاني الجاهزة للتحرير</h3>
+                    <p class="text-xs text-slate-500">اختر قالباً لبدء الكتابة فوراً بهيكل مسبق</p>
+                </div>
+                <button onclick="closeSongTemplateModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3">
+                <div onclick="createSongFromTemplate('pop')" class="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-violet-500 cursor-pointer transition space-y-2 group">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400">🎵 القالب الكلاسيكي (Pop / أغنية عربية قياسية)</h4>
+                        <span class="text-[10px] bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 px-2 py-0.5 rounded-full font-bold">شائع جدًا</span>
+                    </div>
+                    <p class="text-xs text-slate-500">مقدمة ⇠ كوبليه أول ⇠ كورس ⇠ كوبليه ثاني ⇠ جسر ⇠ كورس ⇠ خاتمة</p>
+                </div>
+
+                <div onclick="createSongFromTemplate('ballad')" class="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-violet-500 cursor-pointer transition space-y-2 group">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400">🎻 القالب الدرامي / بالاد (Ballad)</h4>
+                        <span class="text-[10px] bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-full font-bold">عاطفي / حزين</span>
+                    </div>
+                    <p class="text-xs text-slate-500">مقدمة هادئة ⇠ كوبليه أول ⇠ كورس خفيف ⇠ كوبليه ثاني ⇠ جسر ذروة ⇠ كورس كامل ⇠ خاتمة</p>
+                </div>
+
+                <div onclick="createSongFromTemplate('rap')" class="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-violet-500 cursor-pointer transition space-y-2 group">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400">🎙️ قالب راب / هيب هوب (Rap / Hip-Hop)</h4>
+                        <span class="text-[10px] bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-full font-bold">إيقاعي</span>
+                    </div>
+                    <p class="text-xs text-slate-500">مقدمة إيقاعية ⇠ ممر أول (Verse 16 bars) ⇠ لازمة (Hook) ⇠ ممر ثاني ⇠ لازمة ⇠ أؤترو</p>
+                </div>
+
+                <div onclick="createSongFromTemplate('indie')" class="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-violet-500 cursor-pointer transition space-y-2 group">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400">🎸 القالب السريع / إيندي (Short Indie Song)</h4>
+                        <span class="text-[10px] bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-bold">موجز</span>
+                    </div>
+                    <p class="text-xs text-slate-500">مقطع رئيسي 1 ⇠ كورس ⇠ مقطع رئيسي 2 ⇠ خاتمة سريعة</p>
+                </div>
+            </div>
+
+            <div class="pt-2 text-center">
+                <button onclick="closeSongTemplateModal()" class="px-6 py-2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-xl text-xs font-bold">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lock Warning Toast / Modal -->
+    <div id="modal-lock-alert" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 w-full max-w-sm rounded-3xl p-6 text-center space-y-4 shadow-2xl border border-amber-500/50">
+            <div class="w-16 h-16 bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center text-3xl mx-auto animate-bounce">
+                🔒
+            </div>
+            <h3 class="font-bold text-lg text-slate-900 dark:text-white">الجلسة قيد الإنجاز!</h3>
+            <p id="lock-modal-message" class="text-xs text-slate-600 dark:text-slate-300">يجب عليك كتابة جميع الأقسام/العناصر المطلوبة قبل إمكانية العودة للشاشة الرئيسية.</p>
+            <div id="missing-fields-list" class="text-right text-xs bg-amber-50 dark:bg-amber-900/20 p-3 rounded-xl space-y-1 font-semibold text-amber-800 dark:text-amber-300 max-h-32 overflow-y-auto">
+            </div>
+            <button onclick="closeLockAlert()" class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-sm">
+                متابعة الإنجاز الان
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        let db = null;
+        let activeSession = null; 
+        let currentTool = 'dashboard';
+        let activeProjectData = null;
+        let autoSaveTimer = null;
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            initDarkMode();
+            await initIndexedDB();
+            await loadActiveSession();
+            setupWindowUnloadWarning();
+            setupPeriodicNotificationsCheck();
+            
+            if (activeSession) {
+                resumeActiveSession();
+            } else {
+                renderDashboard();
+            }
+        });
+
+        /* 1. IndexedDB Storage Layer */
+        function initIndexedDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('CreativeSpaceDB', 1);
+
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('projects')) {
+                        db.createObjectStore('projects', { keyPath: 'id' });
+                    }
+                    if (!db.objectStoreNames.contains('tasks')) {
+                        db.createObjectStore('tasks', { keyPath: 'id' });
+                    }
+                    if (!db.objectStoreNames.contains('settings')) {
+                        db.createObjectStore('settings', { keyPath: 'key' });
+                    }
+                };
+
+                request.onsuccess = (e) => {
+                    db = e.target.result;
+                    resolve(db);
+                };
+
+                request.onerror = (e) => {
+                    console.error('IndexedDB error:', e);
+                    showSaveStatus('error', 'خطأ في قاعدة البيانات');
+                    resolve(null);
+                };
+            });
+        }
+
+        async function dbPut(storeName, item) {
+            if (!db) return;
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                const req = store.put(item);
+                req.onsuccess = () => resolve(true);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function dbGet(storeName, key) {
+            if (!db) return null;
+            return new Promise((resolve) => {
+                const tx = db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                const req = store.get(key);
+                req.onsuccess = () => resolve(req.result || null);
+                req.onerror = () => resolve(null);
+            });
+        }
+
+        async function dbGetAll(storeName) {
+            if (!db) return [];
+            return new Promise((resolve) => {
+                const tx = db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                const req = store.getAll();
+                req.onsuccess = () => resolve(req.result || []);
+                req.onerror = () => resolve([]);
+            });
+        }
+
+        async function dbDelete(storeName, key) {
+            if (!db) return;
+            return new Promise((resolve) => {
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                const req = store.delete(key);
+                req.onsuccess = () => resolve(true);
+                req.onerror = () => resolve(false);
+            });
+        }
+
+        /* 2. Session Management & Mandatory Lock System */
+        async function loadActiveSession() {
+            const res = await dbGet('settings', 'active_session');
+            if (res && res.value) {
+                activeSession = res.value;
+            } else {
+                activeSession = null;
+            }
+        }
+
+        async function setActiveSession(sessionData) {
+            activeSession = sessionData;
+            await dbPut('settings', { key: 'active_session', value: sessionData });
+            updateActiveSessionBanner();
+        }
+
+        async function clearActiveSession() {
+            activeSession = null;
+            await dbDelete('settings', 'active_session');
+            updateActiveSessionBanner();
+        }
+
+        function updateActiveSessionBanner() {
+            const banner = document.getElementById('active-session-banner');
+            if (banner) {
+                if (activeSession) {
+                    banner.classList.remove('hidden');
+                } else {
+                    banner.classList.add('hidden');
+                }
+            }
+        }
+
+        function setupWindowUnloadWarning() {
+            window.addEventListener('beforeunload', (e) => {
+                if (activeSession) {
+                    e.preventDefault();
+                    e.returnValue = 'لديك جلسة إنجاز نشطة لم تكتمل بعد!';
+                    return e.returnValue;
+                }
+            });
+        }
+
+        function handleHeaderBack() {
+            if (activeSession) {
+                showLockAlert('يجب عليك إنهاء جلسة الإنجاز الحالية واستيفاء الحقول المطلوبة قبل العودة.');
+                return;
+            }
+            if (currentTool === 'song' && document.getElementById('song-editor-mode').classList.contains('hidden') === false) {
+                showSongList();
+            } else if (currentTool === 'script' && document.getElementById('script-scene-editor').classList.contains('hidden') === false) {
+                showScriptExplorer();
+            } else if (currentTool === 'script' && document.getElementById('script-explorer-mode').classList.contains('hidden') === false) {
+                showScriptList();
+            } else if (currentTool === 'poem' && document.getElementById('poem-editor-mode').classList.contains('hidden') === false) {
+                showPoemList();
+            } else {
+                navToDashboard();
+            }
+        }
+
+        function showLockAlert(msg, missing = []) {
+            document.getElementById('lock-modal-message').innerText = msg;
+            const missingBox = document.getElementById('missing-fields-list');
+            missingBox.innerHTML = '';
+            if (missing.length > 0) {
+                missingBox.classList.remove('hidden');
+                missing.forEach(f => {
+                    const d = document.createElement('div');
+                    d.innerText = `• ${f}`;
+                    missingBox.appendChild(d);
+                });
+            } else {
+                missingBox.classList.add('hidden');
+            }
+            document.getElementById('modal-lock-alert').classList.remove('hidden');
+        }
+
+        function closeLockAlert() {
+            document.getElementById('modal-lock-alert').classList.add('hidden');
+        }
+
+        /* 3. Navigation Engine */
+        function navToDashboard() {
+            if (activeSession) {
+                showLockAlert('لا يمكن التنقل للشاشة الرئيسية أثناء وجود جلسة إنجاز مقفلة.');
+                return;
+            }
+            switchView('view-dashboard');
+            currentTool = 'dashboard';
+            document.getElementById('nav-back-btn').classList.add('hidden');
+            document.getElementById('header-title').innerText = 'مساحتي الإبداعية';
+            renderDashboard();
+        }
+
+        function navToTool(tool) {
+            if (activeSession && activeSession.tool !== tool) {
+                showLockAlert('لديك جلسة إنجاز نشطة في أداة أخرى!');
+                return;
+            }
+            currentTool = tool;
+            document.getElementById('nav-back-btn').classList.remove('hidden');
+
+            if (tool === 'song') {
+                document.getElementById('header-title').innerText = 'أداة الأغاني';
+                switchView('view-song');
+                if (activeSession && activeSession.tool === 'song') {
+                    openSongEditor(activeSession.projectId);
+                } else {
+                    showSongList();
+                }
+            } else if (tool === 'script') {
+                document.getElementById('header-title').innerText = 'أداة السيناريو';
+                switchView('view-script');
+                if (activeSession && activeSession.tool === 'script') {
+                    openSceneEditor(activeSession.projectId, activeSession.partId);
+                } else {
+                    showScriptList();
+                }
+            } else if (tool === 'poem') {
+                document.getElementById('header-title').innerText = 'أداة الشعر';
+                switchView('view-poem');
+                if (activeSession && activeSession.tool === 'poem') {
+                    openPoemEditor(activeSession.projectId);
+                } else {
+                    showPoemList();
+                }
+            } else if (tool === 'task') {
+                document.getElementById('header-title').innerText = 'أداة المهام';
+                switchView('view-task');
+                renderTasks();
+            }
+        }
+
+        function switchView(viewId) {
+            const views = ['view-dashboard', 'view-song', 'view-script', 'view-poem', 'view-task'];
+            views.forEach(v => {
+                document.getElementById(v).classList.add('hidden');
+            });
+            document.getElementById(viewId).classList.remove('hidden');
+        }
+
+        async function resumeActiveSession() {
+            if (!activeSession) return;
+            navToTool(activeSession.tool);
+        }
+
+        /* 4. Song Tool Logic */
+        function openSongTemplateModal() {
+            document.getElementById('modal-song-templates').classList.remove('hidden');
+        }
+
+        function closeSongTemplateModal() {
+            document.getElementById('modal-song-templates').classList.add('hidden');
+        }
+
+        async function createSongFromTemplate(templateType) {
+            let defaultTitle = 'أغنية جديدة من قالب';
+            let sections = [];
+
+            if (templateType === 'pop') {
+                defaultTitle = 'أغنية بوب جديدة';
+                sections = [
+                    { id: 'sec_intro_' + Date.now(), name: 'المقدمة (Intro)', content: '', required: true },
+                    { id: 'sec_v1_' + Date.now(), name: 'الكوبليه الأول (Verse 1)', content: '', required: true },
+                    { id: 'sec_chorus1_' + Date.now(), name: 'الكورس / اللازمة (Chorus)', content: '', required: true },
+                    { id: 'sec_v2_' + Date.now(), name: 'الكوبليه الثاني (Verse 2)', content: '', required: true },
+                    { id: 'sec_bridge_' + Date.now(), name: 'الجسر الموسيقي (Bridge)', content: '', required: false },
+                    { id: 'sec_chorus2_' + Date.now(), name: 'تكرار الكورس (Final Chorus)', content: '', required: false },
+                    { id: 'sec_outro_' + Date.now(), name: 'الخاتمة (Outro)', content: '', required: false }
+                ];
+            } else if (templateType === 'ballad') {
+                defaultTitle = 'أغنية درامية جديدة';
+                sections = [
+                    { id: 'sec_intro_' + Date.now(), name: 'مقدمة البيانو / الأوركسترا', content: '', required: true },
+                    { id: 'sec_v1_' + Date.now(), name: 'المقطع الأول (Verse 1)', content: '', required: true },
+                    { id: 'sec_prechorus_' + Date.now(), name: 'ما قبل الكورس (Pre-Chorus)', content: '', required: true },
+                    { id: 'sec_chorus_' + Date.now(), name: 'الكورس العاطفي (Chorus)', content: '', required: true },
+                    { id: 'sec_v2_' + Date.now(), name: 'المقطع الثاني (Verse 2)', content: '', required: false },
+                    { id: 'sec_bridge_' + Date.now(), name: 'ذروة الجسر (Climax Bridge)', content: '', required: false },
+                    { id: 'sec_outro_' + Date.now(), name: 'الخاتمة الروحية (Outro)', content: '', required: false }
+                ];
+            } else if (templateType === 'rap') {
+                defaultTitle = 'تراك راب جديد';
+                sections = [
+                    { id: 'sec_intro_' + Date.now(), name: 'المقدمة (Intro Hook)', content: '', required: true },
+                    { id: 'sec_v1_' + Date.now(), name: 'الممر الأول - 16 بار (Verse 1)', content: '', required: true },
+                    { id: 'sec_hook_' + Date.now(), name: 'اللازمة الرئيسية (Hook)', content: '', required: true },
+                    { id: 'sec_v2_' + Date.now(), name: 'الممر الثاني - 16 بار (Verse 2)', content: '', required: true },
+                    { id: 'sec_outro_' + Date.now(), name: 'الخاتمة (Outro)', content: '', required: false }
+                ];
+            } else if (templateType === 'indie') {
+                defaultTitle = 'أغنية إيندي قصيرة';
+                sections = [
+                    { id: 'sec_v1_' + Date.now(), name: 'المقطع الأول (Part 1)', content: '', required: true },
+                    { id: 'sec_chorus_' + Date.now(), name: 'اللازمة (Chorus)', content: '', required: true },
+                    { id: 'sec_v2_' + Date.now(), name: 'المقطع الثاني (Part 2)', content: '', required: true },
+                    { id: 'sec_outro_' + Date.now(), name: 'الخاتمة (Outro)', content: '', required: false }
+                ];
+            }
+
+            const newSong = {
+                id: 'song_' + Date.now(),
+                type: 'song',
+                title: defaultTitle,
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+                sections: sections
+            };
+
+            await dbPut('projects', newSong);
+            closeSongTemplateModal();
+            openSongEditor(newSong.id);
+        }
+
+        async function showSongList() {
+            document.getElementById('song-list-mode').classList.remove('hidden');
+            document.getElementById('song-editor-mode').classList.add('hidden');
+            const projects = await dbGetAll('projects');
+            const songs = projects.filter(p => p.type === 'song');
+
+            const container = document.getElementById('songs-container');
+            container.innerHTML = '';
+
+            if (songs.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-2 text-center py-8 text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+                        لا توجد أغاني محفوظة بعد. انقر على "أغنية جديدة" لبدء الإبداع.
+                    </div>`;
+                return;
+            }
+
+            songs.forEach(song => {
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-violet-500 transition space-y-3";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-slate-900 dark:text-white truncate">${escapeHtml(song.title)}</h3>
+                        <span class="text-xs text-slate-400">${new Date(song.updatedAt).toLocaleDateString('ar-EG')}</span>
+                    </div>
+                    <p class="text-xs text-slate-500">${song.sections.length} أقسام هيكلية</p>
+                    <div class="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
+                        <button onclick="openSongEditor('${song.id}')" class="flex-1 py-1.5 bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-300 rounded-xl text-xs font-bold hover:bg-violet-100">فتح وتعديل</button>
+                        <button onclick="deleteProjectPrompt('${song.id}')" class="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-xl text-xs">حذف</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function createNewSongPrompt() {
+            const title = prompt('أدخل اسم الأغنية الجديدة:');
+            if (!title || !title.trim()) return;
+
+            const defaultSong = {
+                id: 'song_' + Date.now(),
+                type: 'song',
+                title: title.trim(),
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+                sections: [
+                    { id: 'sec_intro', name: 'المقدمة (Intro)', content: '', required: true },
+                    { id: 'sec_verse1', name: 'الكوبليه الأول (Verse 1)', content: '', required: true },
+                    { id: 'sec_chorus', name: 'الكورس (Chorus)', content: '', required: true },
+                    { id: 'sec_verse2', name: 'الكوبليه الثاني (Verse 2)', content: '', required: false },
+                    { id: 'sec_bridge', name: 'الجسر (Bridge)', content: '', required: false },
+                    { id: 'sec_outro', name: 'الخاتمة (Outro)', content: '', required: false }
+                ]
+            };
+
+            await dbPut('projects', defaultSong);
+            openSongEditor(defaultSong.id);
+        }
+
+        async function openSongEditor(songId) {
+            activeProjectData = await dbGet('projects', songId);
+            if (!activeProjectData) return showSongList();
+
+            await setActiveSession({ tool: 'song', projectId: songId, partId: null });
+
+            document.getElementById('song-list-mode').classList.add('hidden');
+            document.getElementById('song-editor-mode').classList.remove('hidden');
+            document.getElementById('song-title-input').value = activeProjectData.title;
+
+            renderSongSections();
+        }
+
+        function renderSongSections() {
+            const container = document.getElementById('song-sections-list');
+            container.innerHTML = '';
+
+            let totalReq = 0;
+            let filledReq = 0;
+
+            activeProjectData.sections.forEach((sec, idx) => {
+                if (sec.required) {
+                    totalReq++;
+                    if (sec.content && sec.content.trim().length > 0) filledReq++;
+                }
+
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3 shadow-sm";
+                card.innerHTML = `
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-700 pb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="cursor-grab text-slate-400 text-xs">☰</span>
+                            <input type="text" value="${escapeHtml(sec.name)}" onchange="updateSectionName('${sec.id}', this.value)" class="font-bold text-sm bg-transparent border-b border-transparent focus:border-violet-500 focus:outline-none text-slate-800 dark:text-slate-100">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="saveCurrentProjectNow(true)" class="p-1.5 px-2 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-lg text-xs font-bold hover:bg-emerald-100 flex items-center gap-1" title="حفظ سريع لهذا القسم">
+                                <span>💾</span>
+                                <span>حفظ</span>
+                            </button>
+                            <label class="flex items-center gap-1 text-xs text-slate-500 cursor-pointer">
+                                <input type="checkbox" ${sec.required ? 'checked' : ''} onchange="toggleSectionRequired('${sec.id}', this.checked)" class="rounded text-violet-600 focus:ring-violet-500">
+                                <span>مطلوب</span>
+                            </label>
+                            <button onclick="duplicateSection('${sec.id}')" title="تكرار القسم" class="p-1 text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">📋</button>
+                            <button onclick="deleteSection('${sec.id}')" title="حذف القسم" class="p-1 text-xs text-rose-500 hover:text-rose-700">🗑️</button>
+                        </div>
+                    </div>
+                    <textarea oninput="onSectionContentInput('${sec.id}', this.value)" class="w-full h-32 p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm leading-relaxed focus:outline-none focus:border-violet-500 resize-y text-slate-900 dark:text-slate-100" placeholder="انقر هنا واكتب كلمات هذا القسم...">${escapeHtml(sec.content || '')}</textarea>
+                `;
+                container.appendChild(card);
+            });
+
+            const pct = totalReq === 0 ? 100 : Math.round((filledReq / totalReq) * 100);
+            document.getElementById('song-progress-bar').style.width = `${pct}%`;
+            document.getElementById('song-progress-text').innerText = `${filledReq} / ${totalReq}`;
+
+            const finishBtn = document.getElementById('song-finish-btn');
+            if (filledReq === totalReq) {
+                finishBtn.disabled = false;
+                finishBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                finishBtn.disabled = true;
+                finishBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        function onSectionContentInput(secId, val) {
+            const sec = activeProjectData.sections.find(s => s.id === secId);
+            if (sec) {
+                sec.content = val;
+                triggerAutoSave();
+                let totalReq = 0;
+                let filledReq = 0;
+                activeProjectData.sections.forEach(s => {
+                    if (s.required) {
+                        totalReq++;
+                        if (s.content.trim().length > 0) filledReq++;
+                    }
+                });
+                document.getElementById('song-progress-bar').style.width = `${totalReq === 0 ? 100 : (filledReq / totalReq) * 100}%`;
+                document.getElementById('song-progress-text').innerText = `${filledReq} / ${totalReq}`;
+                document.getElementById('song-finish-btn').disabled = (filledReq !== totalReq);
+            }
+        }
+
+        function updateSectionName(secId, newName) {
+            const sec = activeProjectData.sections.find(s => s.id === secId);
+            if (sec && newName.trim()) {
+                sec.name = newName.trim();
+                triggerAutoSave();
+            }
+        }
+
+        function toggleSectionRequired(secId, isReq) {
+            const sec = activeProjectData.sections.find(s => s.id === secId);
+            if (sec) {
+                sec.required = isReq;
+                triggerAutoSave();
+                renderSongSections();
+            }
+        }
+
+        function duplicateSection(secId) {
+            const idx = activeProjectData.sections.findIndex(s => s.id === secId);
+            if (idx !== -1) {
+                const original = activeProjectData.sections[idx];
+                const copy = {
+                    id: 'sec_' + Date.now(),
+                    name: original.name + ' (نسخة)',
+                    content: original.content,
+                    required: original.required
+                };
+                activeProjectData.sections.splice(idx + 1, 0, copy);
+                triggerAutoSave();
+                renderSongSections();
+            }
+        }
+
+        function deleteSection(secId) {
+            if (activeProjectData.sections.length <= 1) {
+                alert('يجب الإبقاء على قسم واحد على الأقل.');
+                return;
+            }
+            activeProjectData.sections = activeProjectData.sections.filter(s => s.id !== secId);
+            triggerAutoSave();
+            renderSongSections();
+        }
+
+        function addNewSongSection() {
+            const name = prompt('اسم القسم الجديد:', 'قسم جديد');
+            if (!name) return;
+            activeProjectData.sections.push({
+                id: 'sec_' + Date.now(),
+                name: name.trim(),
+                content: '',
+                required: false
+            });
+            triggerAutoSave();
+            renderSongSections();
+        }
+
+        function autoSaveSongHeader() {
+            const title = document.getElementById('song-title-input').value;
+            if (title.trim()) {
+                activeProjectData.title = title.trim();
+                triggerAutoSave();
+            }
+        }
+
+        async function duplicateCurrentSong() {
+            const copy = JSON.parse(JSON.stringify(activeProjectData));
+            copy.id = 'song_' + Date.now();
+            copy.title = copy.title + ' (نسخة مستقيمة)';
+            copy.updatedAt = Date.now();
+            await dbPut('projects', copy);
+            alert('تم إنشاء نسخة جديدة مستقلة بنجاح.');
+        }
+
+        async function finishSongSession() {
+            const missing = activeProjectData.sections.filter(s => s.required && s.content.trim().length === 0);
+            if (missing.length > 0) {
+                showLockAlert('لا يمكنك إنهاء الجلسة، توجد أقسام مطلوبة فارغة:', missing.map(m => m.name));
+                return;
+            }
+
+            await saveCurrentProjectNow();
+            await clearActiveSession();
+            showSongList();
+        }
+
+        /* 5. Screenplay Tool Logic */
+        async function showScriptList() {
+            document.getElementById('script-list-mode').classList.remove('hidden');
+            document.getElementById('script-explorer-mode').classList.add('hidden');
+            document.getElementById('script-scene-editor').classList.add('hidden');
+
+            const projects = await dbGetAll('projects');
+            const scripts = projects.filter(p => p.type === 'script');
+
+            const container = document.getElementById('scripts-container');
+            container.innerHTML = '';
+
+            if (scripts.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-2 text-center py-8 text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+                        لا توجد سيناريوهات حتى الآن. أنشئ فيلمك أو مسلسلك الأول الآن.
+                    </div>`;
+                return;
+            }
+
+            scripts.forEach(script => {
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-amber-500 transition space-y-3";
+                const sceneCount = script.scenes ? script.scenes.length : 0;
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-slate-900 dark:text-white truncate">${escapeHtml(script.title)}</h3>
+                        <span class="text-xs px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">${script.scriptType === 'series' ? 'مسلسل' : 'فيلم'}</span>
+                    </div>
+                    <p class="text-xs text-slate-500">${sceneCount} مشاهد مكتوبة</p>
+                    <div class="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
+                        <button onclick="openScriptExplorer('${script.id}')" class="flex-1 py-1.5 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-300 rounded-xl text-xs font-bold hover:bg-amber-100">استكشاف المشاهد</button>
+                        <button onclick="deleteProjectPrompt('${script.id}')" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-xl text-xs">حذف</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function createNewScriptPrompt() {
+            const title = prompt('اسم المشروع السينمائي:');
+            if (!title || !title.trim()) return;
+
+            const scriptType = confirm('هل المشروع عبارة عن مسلسل؟ (انقر "موافق" للمسلسل، أو "إلغاء" للفيلم)') ? 'series' : 'movie';
+
+            const defaultScript = {
+                id: 'script_' + Date.now(),
+                type: 'script',
+                scriptType: scriptType,
+                title: title.trim(),
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+                scenes: [
+                    createDefaultScene(1)
+                ]
+            };
+
+            await dbPut('projects', defaultScript);
+            openScriptExplorer(defaultScript.id);
+        }
+
+        function createDefaultScene(num) {
+            return {
+                id: 'scene_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                number: num,
+                title: `مشهد ${num}`,
+                completed: false,
+                fields: [
+                    { key: 'heading', label: 'عنوان المشهد / المكان والتوقيت', value: 'داخلي - شقة أحمد - نهار', required: true },
+                    { key: 'characters', label: 'الشخصيات المتواجدة', value: 'أحمد، سارة', required: true },
+                    { key: 'action', label: 'وصف الحركة والأحداث', value: 'يجلس أحمد أمام مكتوبه يراجع بعض الأوراق بارتباك...', required: true },
+                    { key: 'dialogue', label: 'الحوار', value: 'أحمد: هل وصلت الشحنة؟\nسارة: ليس بعد، ينتظرون اتصالك.', required: false },
+                    { key: 'notes', label: 'ملاحظات إخراجية', value: '', required: false }
+                ]
+            };
+        }
+
+        async function openScriptExplorer(scriptId) {
+            activeProjectData = await dbGet('projects', scriptId);
+            if (!activeProjectData) return showScriptList();
+
+            document.getElementById('script-list-mode').classList.add('hidden');
+            document.getElementById('script-explorer-mode').classList.remove('hidden');
+            document.getElementById('script-scene-editor').classList.add('hidden');
+
+            document.getElementById('script-project-title').innerText = activeProjectData.title;
+            document.getElementById('script-type-badge').innerText = activeProjectData.scriptType === 'series' ? 'مسلسل' : 'فيلم';
+
+            renderScenesList();
+        }
+
+        function renderScenesList() {
+            const container = document.getElementById('script-scenes-list');
+            container.innerHTML = '';
+
+            activeProjectData.scenes.forEach((scene, index) => {
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center justify-between hover:border-amber-500 transition";
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 font-bold text-xs flex items-center justify-center text-slate-700 dark:text-slate-300">#${scene.number}</span>
+                        <div>
+                            <h4 class="font-bold text-slate-900 dark:text-white text-sm">${escapeHtml(scene.title)}</h4>
+                            <span class="text-xs ${scene.completed ? 'text-emerald-500 font-semibold' : 'text-slate-400'}">
+                                ${scene.completed ? '✓ مكتمل' : 'قيد التطوير'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="openSceneEditor('${activeProjectData.id}', '${scene.id}')" class="px-3 py-1.5 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300 rounded-xl text-xs font-bold hover:bg-amber-100">دخول الجلسة ✍️</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function addNewSceneToScript() {
+            const nextNum = activeProjectData.scenes.length + 1;
+            const newScene = createDefaultScene(nextNum);
+            activeProjectData.scenes.push(newScene);
+            await saveCurrentProjectNow();
+            renderScenesList();
+        }
+
+        async function openSceneEditor(scriptId, sceneId) {
+            activeProjectData = await dbGet('projects', scriptId);
+            if (!activeProjectData) return showScriptList();
+
+            const scene = activeProjectData.scenes.find(s => s.id === sceneId);
+            if (!scene) return openScriptExplorer(scriptId);
+
+            await setActiveSession({ tool: 'script', projectId: scriptId, partId: sceneId });
+
+            document.getElementById('script-explorer-mode').classList.add('hidden');
+            document.getElementById('script-scene-editor').classList.remove('hidden');
+            document.getElementById('scene-editor-num').innerText = `مشهد #${scene.number}`;
+
+            renderSceneFields(scene);
+        }
+
+        function renderSceneFields(scene) {
+            const container = document.getElementById('scene-fields-container');
+            container.innerHTML = '';
+
+            scene.fields.forEach((f, idx) => {
+                const fieldBox = document.createElement('div');
+                fieldBox.className = "space-y-1.5 border-b border-slate-100 dark:border-slate-700/50 pb-3 last:border-none";
+                fieldBox.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-bold text-slate-700 dark:text-slate-300">${escapeHtml(f.label)}</label>
+                        <label class="flex items-center gap-1 text-xs text-slate-500 cursor-pointer">
+                            <input type="checkbox" ${f.required ? 'checked' : ''} onchange="toggleSceneFieldRequired('${scene.id}', ${idx}, this.checked)" class="rounded text-amber-600">
+                            <span>مطلوب</span>
+                        </label>
+                    </div>
+                    <textarea oninput="onSceneFieldInput('${scene.id}', ${idx}, this.value)" class="w-full h-20 p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:border-amber-500 resize-y">${escapeHtml(f.value)}</textarea>
+                `;
+                container.appendChild(fieldBox);
+            });
+
+            checkSceneCompletionState(scene);
+        }
+
+        function onSceneFieldInput(sceneId, fieldIdx, val) {
+            const scene = activeProjectData.scenes.find(s => s.id === sceneId);
+            if (scene) {
+                scene.fields[fieldIdx].value = val;
+                triggerAutoSave();
+                checkSceneCompletionState(scene);
+            }
+        }
+
+        function toggleSceneFieldRequired(sceneId, fieldIdx, isReq) {
+            const scene = activeProjectData.scenes.find(s => s.id === sceneId);
+            if (scene) {
+                scene.fields[fieldIdx].required = isReq;
+                triggerAutoSave();
+                checkSceneCompletionState(scene);
+            }
+        }
+
+        function checkSceneCompletionState(scene) {
+            const missing = scene.fields.filter(f => f.required && f.value.trim().length === 0);
+            const btn = document.getElementById('scene-finish-btn');
+            if (missing.length === 0) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+            } else {
+                btn.disabled = true;
+                btn.classList.add('opacity-50');
+            }
+        }
+
+        async function finishSceneSession() {
+            const sceneId = activeSession.partId;
+            const scene = activeProjectData.scenes.find(s => s.id === sceneId);
+
+            const missing = scene.fields.filter(f => f.required && f.value.trim().length === 0);
+            if (missing.length > 0) {
+                showLockAlert('لا يمكنك إكمال المشهد قبل تعبئة جميع العناصر المطلوبة التالية:', missing.map(m => m.label));
+                return;
+            }
+
+            scene.completed = true;
+            await saveCurrentProjectNow();
+            await clearActiveSession();
+            openScriptExplorer(activeProjectData.id);
+        }
+
+        /* 6. Poetry Tool Logic */
+        async function showPoemList() {
+            document.getElementById('poem-list-mode').classList.remove('hidden');
+            document.getElementById('poem-editor-mode').classList.add('hidden');
+
+            const projects = await dbGetAll('projects');
+            const poems = projects.filter(p => p.type === 'poem');
+
+            const container = document.getElementById('poems-container');
+            container.innerHTML = '';
+
+            if (poems.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-2 text-center py-8 text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+                        لا توجد قصائد قصيرة بعد. اضغط "قصيدة جديدة" للبدء.
+                    </div>`;
+                return;
+            }
+
+            poems.forEach(poem => {
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-pink-500 transition space-y-3";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-slate-900 dark:text-white truncate">${escapeHtml(poem.title)}</h3>
+                        <span class="text-xs text-slate-400">${new Date(poem.updatedAt).toLocaleDateString('ar-EG')}</span>
+                    </div>
+                    <p class="text-xs text-slate-500">${poem.stanzas.length} مقاطع شعريّة</p>
+                    <div class="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
+                        <button onclick="openPoemEditor('${poem.id}')" class="flex-1 py-1.5 bg-pink-50 dark:bg-pink-900/30 text-pink-600 dark:text-pink-300 rounded-xl text-xs font-bold hover:bg-pink-100">تحرير القصيدة</button>
+                        <button onclick="deleteProjectPrompt('${poem.id}')" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-xl text-xs">حذف</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function createNewPoemPrompt() {
+            const title = prompt('عنوان القصيدة الجديدة:');
+            if (!title || !title.trim()) return;
+
+            const defaultPoem = {
+                id: 'poem_' + Date.now(),
+                type: 'poem',
+                title: title.trim(),
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+                stanzas: [
+                    { id: 'stz_1', title: 'المقطع الأول', content: '', required: true },
+                    { id: 'stz_2', title: 'المقطع الثاني', content: '', required: false }
+                ]
+            };
+
+            await dbPut('projects', defaultPoem);
+            openPoemEditor(defaultPoem.id);
+        }
+
+        async function openPoemEditor(poemId) {
+            activeProjectData = await dbGet('projects', poemId);
+            if (!activeProjectData) return showPoemList();
+
+            await setActiveSession({ tool: 'poem', projectId: poemId, partId: null });
+
+            document.getElementById('poem-list-mode').classList.add('hidden');
+            document.getElementById('poem-editor-mode').classList.remove('hidden');
+            document.getElementById('poem-title-input').value = activeProjectData.title;
+
+            renderPoemStanzas();
+        }
+
+        function renderPoemStanzas() {
+            const container = document.getElementById('poem-stanzas-list');
+            container.innerHTML = '';
+
+            let totalReq = 0;
+            let filledReq = 0;
+
+            activeProjectData.stanzas.forEach((stz, idx) => {
+                if (stz.required) {
+                    totalReq++;
+                    if (stz.content.trim().length > 0) filledReq++;
+                }
+
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-2">
+                        <input type="text" value="${escapeHtml(stz.title)}" onchange="updateStanzaTitle('${stz.id}', this.value)" class="font-bold text-sm bg-transparent border-b border-transparent focus:border-pink-500 focus:outline-none">
+                        <div class="flex items-center gap-2">
+                            <label class="flex items-center gap-1 text-xs text-slate-500 cursor-pointer">
+                                <input type="checkbox" ${stz.required ? 'checked' : ''} onchange="toggleStanzaRequired('${stz.id}', this.checked)" class="rounded text-pink-600">
+                                <span>مطلوب</span>
+                            </label>
+                            <button onclick="deleteStanza('${stz.id}')" class="text-xs text-rose-500">🗑️</button>
+                        </div>
+                    </div>
+                    <textarea oninput="onStanzaContentInput('${stz.id}', this.value)" class="w-full h-28 p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm leading-relaxed focus:outline-none focus:border-pink-500 resize-y font-serif" placeholder="اكتب الأبيات الشعرية هنا...">${escapeHtml(stz.content)}</textarea>
+                `;
+                container.appendChild(card);
+            });
+
+            document.getElementById('poem-progress-text').innerText = `${filledReq} / ${totalReq}`;
+            document.getElementById('poem-finish-btn').disabled = (filledReq !== totalReq);
+        }
+
+        function onStanzaContentInput(stzId, val) {
+            const stz = activeProjectData.stanzas.find(s => s.id === stzId);
+            if (stz) {
+                stz.content = val;
+                triggerAutoSave();
+                let totalReq = 0;
+                let filledReq = 0;
+                activeProjectData.stanzas.forEach(s => {
+                    if (s.required) {
+                        totalReq++;
+                        if (s.content.trim().length > 0) filledReq++;
+                    }
+                });
+                document.getElementById('poem-progress-text').innerText = `${filledReq} / ${totalReq}`;
+                document.getElementById('poem-finish-btn').disabled = (filledReq !== totalReq);
+            }
+        }
+
+        function updateStanzaTitle(stzId, title) {
+            const stz = activeProjectData.stanzas.find(s => s.id === stzId);
+            if (stz && title.trim()) {
+                stz.title = title.trim();
+                triggerAutoSave();
+            }
+        }
+
+        function toggleStanzaRequired(stzId, isReq) {
+            const stz = activeProjectData.stanzas.find(s => s.id === stzId);
+            if (stz) {
+                stz.required = isReq;
+                triggerAutoSave();
+                renderPoemStanzas();
+            }
+        }
+
+        function deleteStanza(stzId) {
+            if (activeProjectData.stanzas.length <= 1) return alert('يجب الإبقاء على مقطع واحد على الأقل');
+            activeProjectData.stanzas = activeProjectData.stanzas.filter(s => s.id !== stzId);
+            triggerAutoSave();
+            renderPoemStanzas();
+        }
+
+        function addNewPoemStanza() {
+            activeProjectData.stanzas.push({
+                id: 'stz_' + Date.now(),
+                title: `المقطع #${activeProjectData.stanzas.length + 1}`,
+                content: '',
+                required: false
+            });
+            triggerAutoSave();
+            renderPoemStanzas();
+        }
+
+        function autoSavePoemHeader() {
+            const title = document.getElementById('poem-title-input').value;
+            if (title.trim()) {
+                activeProjectData.title = title.trim();
+                triggerAutoSave();
+            }
+        }
+
+        async function duplicateCurrentPoem() {
+            const copy = JSON.parse(JSON.stringify(activeProjectData));
+            copy.id = 'poem_' + Date.now();
+            copy.title = copy.title + ' (نسخة مستقيمة)';
+            copy.updatedAt = Date.now();
+            await dbPut('projects', copy);
+            alert('تم نسخ القصيدة بنجاح.');
+        }
+
+        async function finishPoemSession() {
+            const missing = activeProjectData.stanzas.filter(s => s.required && s.content.trim().length === 0);
+            if (missing.length > 0) {
+                showLockAlert('لا يمكنك إكمال الجلسة قبل كتابة كافة المقاطع المطلوبة:', missing.map(m => m.title));
+                return;
+            }
+            await saveCurrentProjectNow();
+            await clearActiveSession();
+            showPoemList();
+        }
+
+        /* 7. Tasks & Reminders Engine */
+        async function renderTasks() {
+            const tasks = await dbGetAll('tasks');
+            const container = document.getElementById('tasks-container');
+            container.innerHTML = '';
+
+            if (tasks.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-6 text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 text-xs">
+                        لا توجد مهام مجدولة حالياً.
+                    </div>`;
+                return;
+            }
+
+            tasks.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
+
+            tasks.forEach(task => {
+                const isOverdue = new Date(task.dateTime) < new Date() && !task.completed;
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-2xl border flex items-center justify-between transition ${
+                    task.completed 
+                        ? 'bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 opacity-60' 
+                        : isOverdue 
+                        ? 'bg-rose-50 dark:bg-rose-900/20 border-rose-300 dark:border-rose-800' 
+                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'
+                }`;
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTaskComplete('${task.id}', this.checked)" class="w-5 h-5 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer">
+                        <div>
+                            <h4 class="font-bold text-sm ${task.completed ? 'line-through text-slate-400' : 'text-slate-900 dark:text-white'}">${escapeHtml(task.title)}</h4>
+                            <p class="text-xs text-slate-500">${escapeHtml(task.desc || '')}</p>
+                            <span class="text-[10px] font-semibold ${isOverdue ? 'text-rose-600 dark:text-rose-400' : 'text-slate-400'}">
+                                📅 ${new Date(task.dateTime).toLocaleString('ar-EG')}
+                            </span>
+                        </div>
+                    </div>
+                    <button onclick="deleteTask('${task.id}')" class="p-2 text-slate-400 hover:text-rose-500 text-sm">🗑️</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function handleAddTask(e) {
+            e.preventDefault();
+            const title = document.getElementById('task-title-input').value;
+            const dateTime = document.getElementById('task-datetime-input').value;
+            const desc = document.getElementById('task-desc-input').value;
+            const reminderOffset = parseInt(document.getElementById('task-reminder-offset').value);
+
+            const newTask = {
+                id: 'task_' + Date.now(),
+                title: title.trim(),
+                dateTime: dateTime,
+                desc: desc.trim(),
+                reminderOffset: reminderOffset,
+                completed: false,
+                notified: false
+            };
+
+            await dbPut('tasks', newTask);
+            e.target.reset();
+            renderTasks();
+        }
+
+        async function toggleTaskComplete(taskId, isDone) {
+            const task = await dbGet('tasks', taskId);
+            if (task) {
+                task.completed = isDone;
+                await dbPut('tasks', task);
+                renderTasks();
+            }
+        }
+
+        async function deleteTask(taskId) {
+            await dbDelete('tasks', taskId);
+            renderTasks();
+        }
+
+        function requestNotificationPermission() {
+            if (!('Notification' in window)) {
+                alert('المتصفح الحالي لا يدعم التنبيهات.');
+                return;
+            }
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    alert('تم منح صلاحية الإشعارات بنجاح!');
+                } else {
+                    alert('تم رفض الصلاحية. يُمكنك تفعيلها لاحقاً من إعدادات المتصفح.');
+                }
+            });
+        }
+
+        function setupPeriodicNotificationsCheck() {
+            setInterval(async () => {
+                if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+                const tasks = await dbGetAll('tasks');
+                const now = new Date().getTime();
+
+                tasks.forEach(async (t) => {
+                    if (t.completed || t.notified) return;
+
+                    const taskTime = new Date(t.dateTime).getTime();
+                    const triggerTime = taskTime - (t.reminderOffset * 60 * 1000);
+
+                    if (now >= triggerTime && now < taskTime + 60000) {
+                        new Notification('تنبيه مساحتي الإبداعية 📌', {
+                            body: `موعد المهمة: ${t.title}`,
+                            icon: 'https://placehold.co/128x128/0284c7/ffffff?text=م'
+                        });
+                        t.notified = true;
+                        await dbPut('tasks', t);
+                    }
+                });
+            }, 10000);
+        }
+
+        /* 8. Saving Engine & Dashboard Rendering */
+        function triggerAutoSave() {
+            showSaveStatus('saving', 'جارٍ الحفظ...');
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(() => {
+                saveCurrentProjectNow();
+            }, 800);
+        }
+
+        async function saveCurrentProjectNow(manualNotice = false) {
+            if (!activeProjectData) return;
+            try {
+                activeProjectData.updatedAt = Date.now();
+                await dbPut('projects', activeProjectData);
+                showSaveStatus('saved', manualNotice ? 'تم الحفظ بنجاح 💾' : 'تم الحفظ');
+            } catch (err) {
+                console.error(err);
+                showSaveStatus('error', 'تعذر الحفظ!');
+            }
+        }
+
+        function showSaveStatus(type, label) {
+            const el = document.getElementById('save-status');
+            if (!el) return;
+            let colorClass = 'bg-slate-100 text-slate-500';
+            let dotClass = 'bg-slate-400';
+
+            if (type === 'saving') {
+                colorClass = 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300';
+                dotClass = 'bg-amber-500 animate-ping';
+            } else if (type === 'saved') {
+                colorClass = 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300';
+                dotClass = 'bg-emerald-500';
+            } else if (type === 'error') {
+                colorClass = 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300';
+                dotClass = 'bg-rose-500';
+            }
+
+            el.className = `text-xs px-2.5 py-1 rounded-full font-medium flex items-center gap-1.5 transition-all ${colorClass}`;
+            el.innerHTML = `<span class="w-2 h-2 rounded-full ${dotClass}"></span><span>${label}</span>`;
+        }
+
+        async function renderDashboard() {
+            const projects = await dbGetAll('projects');
+            projects.sort((a, b) => b.updatedAt - a.updatedAt);
+
+            const container = document.getElementById('recent-projects-list');
+            document.getElementById('recent-count').innerText = `${projects.length} مشروعات`;
+            container.innerHTML = '';
+
+            if (projects.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 text-xs">
+                        لا توجد مشروعات حديثة حتى الآن.
+                    </div>`;
+                return;
+            }
+
+            projects.slice(0, 5).forEach(p => {
+                let toolLabel = 'أغنية';
+                let badgeBg = 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300';
+                if (p.type === 'script') {
+                    toolLabel = p.scriptType === 'series' ? 'مسلسل' : 'فيلم';
+                    badgeBg = 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300';
+                } else if (p.type === 'poem') {
+                    toolLabel = 'قصيدة';
+                    badgeBg = 'bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300';
+                }
+
+                const item = document.createElement('div');
+                item.className = "bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center justify-between hover:border-brand-500 transition cursor-pointer";
+                item.onclick = () => navToTool(p.type);
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs px-2.5 py-1 rounded-xl font-bold ${badgeBg}">${toolLabel}</span>
+                        <div>
+                            <h4 class="font-bold text-slate-900 dark:text-white text-sm">${escapeHtml(p.title)}</h4>
+                            <span class="text-[10px] text-slate-400">آخر تعديل: ${new Date(p.updatedAt).toLocaleString('ar-EG')}</span>
+                        </div>
+                    </div>
+                    <span class="text-slate-400 text-sm">←</span>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        async function deleteProjectPrompt(id) {
+            if (confirm('هل أنت تأكد من رغبتك في حذف هذا المشروع نهائياً؟')) {
+                await dbDelete('projects', id);
+                if (currentTool === 'song') showSongList();
+                if (currentTool === 'script') showScriptList();
+                if (currentTool === 'poem') showPoemList();
+            }
+        }
+
+        /* 9. Import / Export JSON Engine */
+        function openBackupModal() {
+            document.getElementById('modal-backup').classList.remove('hidden');
+        }
+
+        function closeBackupModal() {
+            document.getElementById('modal-backup').classList.add('hidden');
+        }
+
+        async function exportDataJSON() {
+            const projects = await dbGetAll('projects');
+            const tasks = await dbGetAll('tasks');
+            const settings = await dbGetAll('settings');
+
+            const dump = {
+                version: 1,
+                exportedAt: new Date().toISOString(),
+                projects,
+                tasks,
+                settings
+            };
+
+            const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `creative_space_backup_${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importDataJSON(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    if (!data.projects || !Array.isArray(data.projects)) {
+                        alert('الملف غير صالحة هيكليته!');
+                        return;
+                    }
+
+                    if (confirm('هل أنت متأكد من استبدال واستيراد هذه البيانات؟ سيتم حفظ كافة العناصر المطلوبة.')) {
+                        for (const p of data.projects) await dbPut('projects', p);
+                        if (data.tasks) {
+                            for (const t of data.tasks) await dbPut('tasks', t);
+                        }
+                        alert('تم استيراد النسخة الاحتياطية بنجاح!');
+                        closeBackupModal();
+                        location.reload();
+                    }
+                } catch (err) {
+                    alert('تعذر قراءة ملف JSON الخاص بالنسخة الاحتياطية.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        /* Helpers */
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;")
+                      .replace(/</g, "&lt;")
+                      .replace(/>/g, "&gt;")
+                      .replace(/"/g, "&quot;")
+                      .replace(/'/g, "&#039;");
+        }
+
+        function initDarkMode() {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+        }
+    </script>
+</body>
+</html>
